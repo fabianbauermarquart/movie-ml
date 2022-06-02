@@ -1,79 +1,4 @@
-# 1. Movie categorization
-
-## *Problem statement:*
-
-You are given millions of movies and a list of thousands of movie categories (names only e.g. “Sci Fi Movies”, “Romantic Movies”).
-Your task is to assign each movie to at least one of the movie categories.
-Each movie has a title, description and poster.
-
-## *Chosen approach:*
-
-First, assume we that we have the following data for each movie:
-- Title
-- Plot summary
-- Category
-
-### Solution
-
-We then use supervised learning and the available data to build an LSTM (long short-term memory) classifier.
-The plot summary text is vectorized and mapped to a word-embedding.
-The categories are one-hot-encoded, and we use softmax for the LSTM network's output activation function.
-The data can then be segmented into training and validation sets.
-We use the training set to train the classifier using a categorical cross-entropy loss fucntion.
-
-### Evaluation
-
-During training, the quality (i.e. accuracy) of the LSTM classifier can be observed via its accuracy on the evaluation
-set to estimate the amount of overfitting.
-Additional testing has to be carried out on an additional test data set taken from a different source such that
-we can make sure that our classifier is robust against a distribution shift.
-This is the case when the validation and test accuracy are equal or higher than the training accuracy.
-
-### Adding a category
-
-The classifier has to be re-trained. 
-This is because the LSTM network architecture has to change as the number of output neurons reflects the number of categories.
-
-### Removing a category
-
-1. Easy approach: the classifier output is a list of scores which express the likelihood of each category.
-   If a category is removed, we can instead return the category with the 2nd highest score.
-2. Integrated approach: we assume that the category has also been removed from the original data.
-   Using this modified data, the classifier is trained from the beginning.
-
-### Adding a movie
-
-Simply resume training of the existing classifier with an added batch of training data.
-
-### Removing a movie
-
-No action required. We only have to re-train the classifier if the movie's data was faulty.
-
-
-| Pros                                                                                                 | Cons                                                                                 |
-|------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| LSTMs are state-of-the-art for a lot of NLP tasks, such as machine translation or sentiment analysis | Categories have to be added to training data manually if not already present         |
-| The more data we have, the more accurate the model becomes                                           | Depends on quality of data, if descriptions are too short, there may be inaccuracies |
-| No need to hand-craft rules to assign movie categories                                               | Can only assign one category per movie                                               |
-
-
-### Alternative Solution
-
-The solution mentioned above does not handle multi-label assignment.
-To tackle this, we modify the classifier: 
-The LSTM network's loss function is replaced by a binary crossentropy function.
-The output activation function is replaced by a logistic activation function.
-Then, we can define a threshold 0.5 which we use to assign the movie categories:
-all categories over a score of 0.5 will be assigned to the queried movie.
-
-| Pros                                                                            | Cons                                                                          |
-|---------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
-| We can assign multiple movie categories using only one classifier               | Correlations between categories are not used for classification               |
-| Not required to modify the data such as merging co-occuring categories into one | The choice of threshold is heuristic and can only be evaluated after training |
-| Not required to train a separate classifier for each category                   |                                                                               |
-
-
-# 2. Word count in PySpark
+# 1. Word count in PySpark
 
 ## Requirements
 
@@ -137,7 +62,7 @@ spark-submit word_counts.py -i ./resources/biographies2.list -o ./out/biographie
 The results are found in the directory `./out/biographies_word_count`.
 
 
-# 3. Movie view estimations
+# 2. Movie view estimations
 
 Follow the same installation instructions as above. 
 
